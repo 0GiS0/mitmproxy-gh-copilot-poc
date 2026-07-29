@@ -75,3 +75,26 @@ docker run -d --name otel-collector \
 2. Deberías ver los spans reflejados en el log `debug` del colector casi al instante.
 3. Si usas Jaeger, comprueba su UI (normalmente `http://localhost:16686`) para ver la traza completa de la interacción.
 4. En Application Insights, las trazas tardan algo más en indexarse (transaction search / Application Map); si no aparecen, revisa que la connection string sea correcta y que el exporter `azuremonitor` no esté comentado en `otel-collector-config.yml`.
+
+## Dashboard de Grafana dentro de Application Insights
+
+Application Insights incluye una experiencia de Grafana integrada y gratuita (sin necesidad de una instancia de Azure Managed Grafana aparte): **Dashboards with Grafana**. Se abre desde el propio recurso de Application Insights en el portal, menú izquierdo → **Dashboards with Grafana**. Más info: [Dashboards with Grafana in Application Insights](https://learn.microsoft.com/azure/azure-monitor/app/grafana-dashboards).
+
+1. Azure ya ofrece un dashboard prediseñado **GitHub Copilot** (galería de "Azure-managed dashboards" o import directo desde <https://aka.ms/amg/dash/gh-copilot>) con operaciones, tokens, sesiones de chat, tool calls y latencia por modelo.
+2. Ese dashboard no distingue por **agente/modo personalizado** (custom chat mode), así que conviene clonarlo (**Save As**) y añadir un panel nuevo con esta query KQL, que agrupa por `copilot_chat.mode_name` (solo presente cuando `github.copilot.agent.type == "custom"`):
+
+   ```kusto
+   dependencies
+   | where timestamp > ago(30d)
+   | where name startswith "invoke_agent"
+   | extend agentType = tostring(customDimensions["github.copilot.agent.type"]),
+            agentMode = tostring(customDimensions["copilot_chat.mode_name"])
+   | extend agent = iif(agentType == "custom", agentMode, "GitHub Copilot (default)")
+   | summarize invocations = count(),
+               sessions = dcount(tostring(customDimensions["copilot_chat.session_id"]))
+             by agent
+   | order by invocations desc
+   ```
+
+3. Usa esa query en un panel de tipo _Bar chart_ o _Pie chart_ (eje `agent`, valor `invocations`) para ver de un vistazo qué custom agent (por ejemplo "📺 YouTube") se usa más y cuántas veces.
+4. Como todo dashboard guardado es un recurso de Azure, puedes exportarlo como ARM/Bicep para reproducirlo en otros entornos.
