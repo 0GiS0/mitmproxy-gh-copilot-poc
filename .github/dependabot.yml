@@ -1,0 +1,45 @@
+# 🤖 Configuración de Dependabot
+# Documentación: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+version: 2
+
+updates:
+  # 🐍 Dependencias de Python (requirements.txt)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "⬆️ pip"
+      include: "scope"
+    labels:
+      - "📦 dependencies"
+      - "🐍 python"
+    groups:
+      # 🧪 Agrupa las dependencias de testing en un único PR
+      testing:
+        patterns:
+          - "pytest*"
+      # 🌐 Agrupa las dependencias de mitmproxy en un único PR
+      mitmproxy:
+        patterns:
+          - "mitmproxy*"
+
+  # ⚙️ Dependencias de GitHub Actions (por si en el futuro se añaden workflows)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "06:00"
+      timezone: "Europe/Madrid"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "⬆️ actions"
+      include: "scope"
+    labels:
+      - "📦 dependencies"
+      - "⚙️ github-actions"
