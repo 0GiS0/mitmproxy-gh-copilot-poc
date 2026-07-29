@@ -1,8 +1,8 @@
 """
-Tests unitarios para el addon CopilotContentFilter.
+Unit tests for the CopilotContentFilter addon.
 
-Estrategia: construimos HTTPFlow falsos usando mitmproxy's test helpers
-para no necesitar un proxy real en marcha.
+Strategy: build fake HTTPFlow objects using mitmproxy's test helpers
+so we don't need a real proxy running.
 """
 
 import json
@@ -25,7 +25,7 @@ from addon import (
 # ---------------------------------------------------------------------------
 
 def make_flow(host: str, path: str = "/v1/completions", body: dict | None = None, method: str = "POST"):
-    """Crea un HTTPFlow mínimo apuntando al host dado."""
+    """Create a minimal HTTPFlow pointing at the given host."""
     content = json.dumps(body).encode() if body else b""
     req = tutils.treq(
         method=method.encode(),
@@ -130,13 +130,13 @@ class TestFindBannedKeyword:
         assert _find_banned_keyword("escribe una función que ordene una lista") is None
 
     def test_word_boundary_no_false_positive(self):
-        # "explotar" no debe disparar "exploit"
+        # "explotar" (Spanish for "to exploit/overuse") must not trigger "exploit"
         result = _find_banned_keyword("voy a explotar los recursos del servidor")
         assert result != "exploit"
 
 
 # ---------------------------------------------------------------------------
-# CopilotContentFilter (integración del addon)
+# CopilotContentFilter (addon integration)
 # ---------------------------------------------------------------------------
 
 class TestCopilotContentFilter:
@@ -148,7 +148,7 @@ class TestCopilotContentFilter:
         f = make_flow("api.githubcopilot.com", body=body)
         self.addon.request(f)
         assert f.response is not None
-        # Completions API (sugerencias inline): 200 con texto vacío, no un error.
+        # Completions API (inline suggestions): 200 with empty text, not an error.
         assert f.response.status_code == 200
         resp_body = json.loads(f.response.content)
         assert resp_body["choices"][0]["text"] == ""
@@ -162,7 +162,7 @@ class TestCopilotContentFilter:
         f = make_flow("copilot-proxy.githubusercontent.com", body=body)
         self.addon.request(f)
         assert f.response is not None
-        # Chat API (no streaming): 200 con un mensaje del asistente explicando el bloqueo.
+        # Chat API (non-streaming): 200 with an assistant message explaining the block.
         assert f.response.status_code == 200
         resp_body = json.loads(f.response.content)
         message = resp_body["choices"][0]["message"]["content"]
@@ -212,7 +212,7 @@ class TestCopilotContentFilter:
         assert f.response.status_code == 200
         assert f.response.headers["Content-Type"] == "text/event-stream"
         text = f.response.content.decode()
-        # Los eventos Anthropic llevan línea "event:" además de "data:"
+        # Anthropic events carry an "event:" line in addition to "data:"
         assert "event: message_start" in text
         assert "event: content_block_delta" in text
         assert "event: message_stop" in text
@@ -222,12 +222,12 @@ class TestCopilotContentFilter:
         body = {"prompt": "escribe una función que calcule el factorial de n"}
         f = make_flow("api.githubcopilot.com", body=body)
         self.addon.request(f)
-        assert f.response is None  # no bloqueado
+        assert f.response is None  # not blocked
 
     def test_ignores_internal_tool_calling_request(self):
-        # Petición interna de Copilot (p.ej. categorize_prompt) con function calling:
-        # aunque contenga la keyword, no debe sustituirse la respuesta porque rompería
-        # el protocolo de tool_calls esperado por la extensión.
+        # Internal Copilot request (e.g. categorize_prompt) using function calling:
+        # even if it contains the keyword, the response must not be replaced because it
+        # would break the tool_calls protocol expected by the extension.
         body = {
             "model": "gpt-4o-mini-2024-07-18",
             "messages": [
@@ -247,9 +247,9 @@ class TestCopilotContentFilter:
         assert f.response is None
 
     def test_blocks_agent_mode_request_with_tools_and_auto_choice(self):
-        # Petición real de Copilot Chat en modo agente: incluye `tools` disponibles
-        # y `tool_choice: "auto"`, pero es el turno de chat visible del usuario y
-        # SÍ debe bloquearse si contiene una keyword baneada.
+        # Real Copilot Chat request in agent mode: includes available `tools`
+        # and `tool_choice: "auto"`, but it's the user's visible chat turn, so it
+        # MUST be blocked if it contains a banned keyword.
         body = {
             "model": "gpt-4o",
             "messages": [{"role": "user", "content": "cuéntame sobre mi perro"}],
@@ -266,7 +266,7 @@ class TestCopilotContentFilter:
         body = {"prompt": "robar contraseñas"}
         f = make_flow("api.openai.com", body=body)
         self.addon.request(f)
-        # No debe bloquear aunque tenga keyword, porque no es Copilot
+        # Must not block even with a keyword, because it's not Copilot
         assert f.response is None
 
     def test_allows_request_with_no_body(self):
@@ -279,7 +279,7 @@ class TestCopilotContentFilter:
         f = make_flow("api.githubcopilot.com", body=body)
         self.addon.request(f)
         assert f.response is not None
-        # Debe ser JSON válido con forma de chat.completion
+        # Must be valid JSON shaped like a chat.completion
         data = json.loads(f.response.content)
         assert data["object"] == "chat.completion"
         assert data["choices"][0]["message"]["role"] == "assistant"

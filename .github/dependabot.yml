@@ -1,9 +1,9 @@
-# 🤖 Configuración de Dependabot
-# Documentación: https://docs.github.com/code-security/dependabot/dependabot-version-updates
+# 🤖 Dependabot configuration
+# Docs: https://docs.github.com/code-security/dependabot/dependabot-version-updates
 version: 2
 
 updates:
-  # 🐍 Dependencias de Python (requirements.txt)
+  # 🐍 Python dependencies (requirements.txt)
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
@@ -19,16 +19,16 @@ updates:
       - "📦 dependencies"
       - "🐍 python"
     groups:
-      # 🧪 Agrupa las dependencias de testing en un único PR
+      # 🧪 Groups testing dependencies into a single PR
       testing:
         patterns:
           - "pytest*"
-      # 🌐 Agrupa las dependencias de mitmproxy en un único PR
+      # 🌐 Groups mitmproxy dependencies into a single PR
       mitmproxy:
         patterns:
           - "mitmproxy*"
 
-  # ⚙️ Dependencias de GitHub Actions (por si en el futuro se añaden workflows)
+  # ⚙️ GitHub Actions dependencies (in case workflows are added in the future)
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
