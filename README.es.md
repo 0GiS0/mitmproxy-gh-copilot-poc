@@ -206,16 +206,6 @@ mitmproxy-gh-copilot-poc/
 └── README.es.md                  # Este fichero (español)
 ```
 
-## 🤝 Contribuir
-
-¡Las contribuciones son bienvenidas! Abre un [issue](https://github.com/0GiS0/mitmproxy-gh-copilot-poc/issues) o envía un pull request con mejoras, nuevas estrategias de palabras clave o correcciones.
-
-1. Haz un fork del repositorio
-2. Crea una rama (`git checkout -b feature/mi-mejora`)
-3. Haz commit de tus cambios (`git commit -m 'Añade mi mejora'`)
-4. Sube la rama (`git push origin feature/mi-mejora`)
-5. Abre un Pull Request
-
 ## 🌐 Sígueme en Mis Redes Sociales
 
 Si te ha gustado este proyecto y quieres ver más contenido como este, no olvides suscribirte a mi canal de YouTube y seguirme en mis redes sociales:
