@@ -25,7 +25,7 @@ Añade esto a tu `settings.json` (usuario o workspace):
   "github.copilot.chat.otel.otlpEndpoint": "http://localhost:4318",
   // Ojo: incluye el contenido completo de prompts/respuestas en los spans.
   // Puede contener información sensible, actívalo solo si lo necesitas.
-  "github.copilot.chat.otel.captureContent": false
+  "github.copilot.chat.otel.captureContent": false,
 }
 ```
 
