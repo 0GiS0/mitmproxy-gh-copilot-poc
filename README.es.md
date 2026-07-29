@@ -13,12 +13,7 @@
 
 🌐 **Idioma:** Español | [English](README.md)
 
-¡Hola developer 👋🏻! Este es un addon para **mitmproxy** que intercepta las peticiones entre VS Code / GitHub Copilot y sus APIs (compatibles con OpenAI/Anthropic), y bloquea aquellas cuyo prompt contenga palabras clave prohibidas (política de contenido), respondiendo con un `200 OK` realista en lugar de un error de red.
-
-<!-- TODO: sustituye CODIGO_DEL_VIDEO y TÍTULO_DEL_VÍDEO cuando publiques el vídeo -->
-<a href="https://youtu.be/CODIGO_DEL_VIDEO">
- <img src="https://img.youtube.com/vi/CODIGO_DEL_VIDEO/maxresdefault.jpg" alt="TÍTULO_DEL_VÍDEO" width="100%" />
-</a>
+¡Hola developer 👋🏻! Esta es una prueba de concepto donde utilizo **mitmproxy** y un addon en Python que intercepta las peticiones entre VS Code / GitHub Copilot y sus APIs (compatibles con OpenAI/Anthropic), y bloquea aquellas cuyo prompt contenga palabras clave prohibidas (política de contenido), respondiendo con un `200 OK` realista en lugar de un error de red.
 
 ---
 
